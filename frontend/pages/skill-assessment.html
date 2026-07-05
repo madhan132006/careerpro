@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills - CareerPro AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-theme="light">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-robot"></i></div>
+            <span style="font-weight: 800; font-size: 1.1rem; color: var(--text-primary);">CareerPro AI</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Main</div>
+            <a href="dashboard.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-grid-1x2"></i></span> Dashboard
+            </a>
+            <a href="profile.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-person"></i></span> Profile
+            </a>
+            
+            <div class="nav-section-title">Assessments</div>
+            <a href="skill-assessment.html" class="sidebar-link active">
+                <span class="link-icon"><i class="bi bi-tools"></i></span> Skills
+            </a>
+            <a href="interest-assessment.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-compass"></i></span> Career Interest
+            </a>
+
+            <div class="nav-section-title">AI Modules</div>
+            <a href="career-recommendation.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-magic"></i></span> Career Match
+            </a>
+            <a href="learning-roadmap.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-map"></i></span> Learning Roadmap
+            </a>
+            <a href="resume-analyzer.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-file-earmark-pdf"></i></span> Resume Analyzer
+            </a>
+            <a href="interview-prep.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-person-video3"></i></span> Interview Prep
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">Skill Assessment</h1>
+                <p class="page-subtitle">Add your technical and soft skills and rate your proficiency.</p>
+            </div>
+            <button id="theme-toggle" class="theme-toggle"><i class="bi bi-moon-stars-fill"></i></button>
+        </header>
+
+        <div class="grid grid-3">
+            <!-- Add Skill Form -->
+            <div class="card animate-fadeInUp delay-1">
+                <h3 class="mb-4 text-lg">Add New Skill</h3>
+                <form id="add-skill-form">
+                    <div class="form-group">
+                        <label class="form-label">Skill Name</label>
+                        <input type="text" id="skillName" class="form-control" placeholder="e.g. Java, React, Leadership" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="category" class="form-control form-select" required>
+                            <option value="">Select Category</option>
+                            <option value="PROGRAMMING">Programming</option>
+                            <option value="DATABASE">Database</option>
+                            <option value="CLOUD">Cloud & DevOps</option>
+                            <option value="AI">AI & Machine Learning</option>
+                            <option value="COMMUNICATION">Communication</option>
+                            <option value="LEADERSHIP">Leadership</option>
+                            <option value="SOFT_SKILLS">Soft Skills</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label flex justify-between">
+                            Proficiency (1-5)
+                            <span id="prof-value" class="text-primary font-bold">1</span>
+                        </label>
+                        <input type="range" id="proficiency" min="1" max="5" value="1" class="w-full mt-2" oninput="document.getElementById('prof-value').textContent = this.value">
+                        <div class="flex justify-between text-xs text-muted mt-1">
+                            <span>Beginner</span>
+                            <span>Expert</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full mt-4" id="add-btn">
+                        <i class="bi bi-plus-circle"></i> Add Skill
+                    </button>
+                </form>
+            </div>
+
+            <!-- Skills List -->
+            <div class="card animate-fadeInUp delay-2" style="grid-column: span 2;">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h3 class="text-lg">Your Skills</h3>
+                    <div class="badge badge-primary" id="total-skills-badge">0 Skills</div>
+                </div>
+                
+                <div id="skills-container" class="grid grid-2" style="gap: 16px;">
+                    <!-- Skills will be rendered here -->
+                    <div class="col-span-2 text-center py-6 text-muted">
+                        No skills added yet. Add skills to improve AI recommendations.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../js/app.js"></script>
+    <script>
+        let currentSkills = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSkills();
+
+            document.getElementById('add-skill-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('add-btn');
+                
+                const data = {
+                    skillName: document.getElementById('skillName').value,
+                    category: document.getElementById('category').value,
+                    proficiency: parseInt(document.getElementById('proficiency').value)
+                };
+
+                try {
+                    btn.disabled = true;
+                    btn.innerHTML = 'Adding...';
+                    
+                    const res = await api.post('/skills', data);
+                    if (res.success) {
+                        ui.showToast('Skill added successfully');
+                        document.getElementById('add-skill-form').reset();
+                        document.getElementById('prof-value').textContent = '1';
+                        loadSkills();
+                    }
+                } catch (error) {
+                    ui.showToast(error.message, 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-plus-circle"></i> Add Skill';
+                }
+            });
+        });
+
+        async function loadSkills() {
+            try {
+                const res = await api.get('/skills');
+                if (res.success) {
+                    currentSkills = res.data;
+                    renderSkills(currentSkills);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderSkills(skills) {
+            document.getElementById('total-skills-badge').textContent = `${skills.length} Skills`;
+            const container = document.getElementById('skills-container');
+            
+            if (skills.length === 0) {
+                container.innerHTML = '<div style="grid-column: span 2; text-align: center; padding: 40px 0; color: var(--gray-400);">No skills added yet.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            skills.forEach(skill => {
+                const item = document.createElement('div');
+                item.className = 'p-3 rounded-md border flex items-center justify-between';
+                item.style.borderColor = 'var(--border-color)';
+                
+                const dots = Array.from({length: 5}, (_, i) => 
+                    `<div class="proficiency-dot ${i < skill.proficiency ? 'filled' : ''}"></div>`
+                ).join('');
+
+                const catColor = getCategoryColor(skill.category);
+
+                item.innerHTML = `
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <h4 style="margin:0; font-size: 0.95rem;">${skill.skillName}</h4>
+                            <span class="badge" style="font-size: 0.6rem; background: ${catColor}20; color: ${catColor};">${skill.category}</span>
+                        </div>
+                        <div class="proficiency-dots mt-2">${dots}</div>
+                    </div>
+                    <button class="btn btn-sm" style="background: var(--error); color: white; padding: 4px 8px;" onclick="deleteSkill(${skill.id})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        async function deleteSkill(id) {
+            if(confirm('Are you sure you want to delete this skill?')) {
+                try {
+                    const res = await api.delete(`/skills/${id}`);
+                    if(res.success) {
+                        ui.showToast('Skill deleted');
+                        loadSkills();
+                    }
+                } catch(err) {
+                    ui.showToast(err.message, 'error');
+                }
+            }
+        }
+
+        function getCategoryColor(cat) {
+            switch(cat) {
+                case 'PROGRAMMING': return '#2563eb';
+                case 'DATABASE': return '#10b981';
+                case 'CLOUD': return '#8b5cf6';
+                case 'AI': return '#ec4899';
+                default: return '#64748b';
+            }
+        }
+    </script>
+</body>
+</html>

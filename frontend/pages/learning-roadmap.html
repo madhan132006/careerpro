@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Roadmap - CareerPro AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        .timeline-marker {
+            position: absolute;
+            left: -40px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.8rem;
+            z-index: 1;
+        }
+        .timeline-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-robot"></i></div>
+            <span style="font-weight: 800; font-size: 1.1rem; color: var(--text-primary);">CareerPro AI</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Main</div>
+            <a href="dashboard.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-grid-1x2"></i></span> Dashboard
+            </a>
+            <a href="profile.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-person"></i></span> Profile
+            </a>
+            
+            <div class="nav-section-title">Assessments</div>
+            <a href="skill-assessment.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-tools"></i></span> Skills
+            </a>
+            <a href="interest-assessment.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-compass"></i></span> Career Interest
+            </a>
+
+            <div class="nav-section-title">AI Modules</div>
+            <a href="career-recommendation.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-magic"></i></span> Career Match
+            </a>
+            <a href="learning-roadmap.html" class="sidebar-link active">
+                <span class="link-icon"><i class="bi bi-map"></i></span> Learning Roadmap
+            </a>
+            <a href="resume-analyzer.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-file-earmark-pdf"></i></span> Resume Analyzer
+            </a>
+            <a href="interview-prep.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-person-video3"></i></span> Interview Prep
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">Personalized Roadmap</h1>
+                <p class="page-subtitle">Your AI-generated step-by-step guide to achieving your career goals.</p>
+            </div>
+            <button id="theme-toggle" class="theme-toggle"><i class="bi bi-moon-stars-fill"></i></button>
+        </header>
+
+        <div class="card mb-6">
+            <div class="flex gap-4 items-end">
+                <div class="form-group mb-0" style="flex: 1;">
+                    <label class="form-label">Target Career Title</label>
+                    <input type="text" id="target-career" class="form-control" placeholder="e.g. Data Scientist">
+                </div>
+                <button id="generate-roadmap-btn" class="btn btn-primary">
+                    <i class="bi bi-magic"></i> Generate Roadmap
+                </button>
+            </div>
+        </div>
+
+        <div id="loading-indicator" class="text-center py-10 hidden">
+            <div class="spinner mx-auto mb-4" style="margin: 0 auto;"></div>
+            <p class="text-primary font-semibold">Gemini AI is crafting your customized roadmap...</p>
+            <p class="text-sm text-muted">This takes about 10-15 seconds.</p>
+        </div>
+
+        <div id="roadmap-container" class="hidden">
+            <div class="mb-6 flex justify-between items-center">
+                <h2 class="text-xl" id="roadmap-title">Roadmap for Software Engineer</h2>
+                <div class="badge badge-purple" id="roadmap-duration">12 Weeks</div>
+            </div>
+
+            <div class="timeline" id="timeline-container">
+                <!-- Timeline items injected here -->
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check URL params
+            const urlParams = new URLSearchParams(window.location.search);
+            const career = urlParams.get('career');
+            if (career) {
+                document.getElementById('target-career').value = career;
+                generateRoadmap(career);
+            }
+
+            document.getElementById('generate-roadmap-btn').addEventListener('click', () => {
+                const title = document.getElementById('target-career').value.trim();
+                if(!title) {
+                    ui.showToast('Please enter a target career', 'warning');
+                    return;
+                }
+                generateRoadmap(title);
+            });
+        });
+
+        async function generateRoadmap(careerTitle) {
+            document.getElementById('roadmap-container').classList.add('hidden');
+            document.getElementById('loading-indicator').classList.remove('hidden');
+            const btn = document.getElementById('generate-roadmap-btn');
+            btn.disabled = true;
+
+            try {
+                const res = await api.post('/career/roadmap', { careerTitle });
+                if(res.success && res.data) {
+                    renderRoadmap(careerTitle, res.data);
+                }
+            } catch (err) {
+                ui.showToast(err.message, 'error');
+            } finally {
+                document.getElementById('loading-indicator').classList.add('hidden');
+                btn.disabled = false;
+            }
+        }
+
+        function renderRoadmap(title, data) {
+            document.getElementById('roadmap-container').classList.remove('hidden');
+            document.getElementById('roadmap-title').textContent = `Roadmap: ${data.careerTitle || title}`;
+            document.getElementById('roadmap-duration').textContent = data.estimatedDuration || '12 Weeks';
+
+            const container = document.getElementById('timeline-container');
+            container.innerHTML = '';
+
+            if(!data.phases || data.phases.length === 0) {
+                container.innerHTML = '<p class="text-muted">No phases generated.</p>';
+                return;
+            }
+
+            data.phases.forEach((phase, index) => {
+                const topicsList = phase.topicsToCover.map(t => `<li><i class="bi bi-check2 text-success mr-1"></i> ${t}</li>`).join('');
+                const resourcesList = phase.recommendedResources.map(r => `<li><i class="bi bi-link-45deg text-primary mr-1"></i> ${r}</li>`).join('');
+
+                const item = document.createElement('div');
+                item.className = 'timeline-item animate-fadeInUp';
+                item.style.animationDelay = `${index * 0.1}s`;
+                
+                item.innerHTML = `
+                    <div class="timeline-marker">W${index+1}</div>
+                    <div class="timeline-content">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg text-primary">${phase.phaseName}</h3>
+                            <span class="text-sm font-semibold text-muted">${phase.duration}</span>
+                        </div>
+                        <p class="text-sm text-muted mb-4">${phase.description}</p>
+                        
+                        <div class="grid grid-2 gap-4">
+                            <div>
+                                <h4 class="text-sm font-semibold mb-2">Topics to Cover</h4>
+                                <ul class="text-sm text-muted" style="list-style:none; padding:0; display:flex; flex-direction:column; gap:4px;">
+                                    ${topicsList}
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold mb-2">Recommended Resources</h4>
+                                <ul class="text-sm text-muted" style="list-style:none; padding:0; display:flex; flex-direction:column; gap:4px;">
+                                    ${resourcesList}
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 pt-3 border-t">
+                            <h4 class="text-sm font-semibold mb-1"><i class="bi bi-laptop"></i> Project Idea</h4>
+                            <p class="text-sm text-muted m-0">${phase.projectIdea}</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+    </script>
+</body>
+</html>

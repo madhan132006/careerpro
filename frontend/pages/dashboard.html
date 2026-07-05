@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CareerPro AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body data-theme="light">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-robot"></i></div>
+            <span style="font-weight: 800; font-size: 1.1rem; color: var(--text-primary);">CareerPro AI</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Main</div>
+            <a href="dashboard.html" class="sidebar-link active">
+                <span class="link-icon"><i class="bi bi-grid-1x2"></i></span> Dashboard
+            </a>
+            <a href="profile.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-person"></i></span> Profile
+            </a>
+            
+            <div class="nav-section-title">Assessments</div>
+            <a href="skill-assessment.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-tools"></i></span> Skills
+            </a>
+            <a href="interest-assessment.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-compass"></i></span> Career Interest
+            </a>
+
+            <div class="nav-section-title">AI Modules</div>
+            <a href="career-recommendation.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-magic"></i></span> Career Match
+            </a>
+            <a href="learning-roadmap.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-map"></i></span> Learning Roadmap
+            </a>
+            <a href="resume-analyzer.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-file-earmark-pdf"></i></span> Resume Analyzer
+            </a>
+            <a href="interview-prep.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-person-video3"></i></span> Interview Prep
+            </a>
+        </nav>
+        
+        <div style="padding: 16px; border-top: 1px solid var(--border-color);">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="avatar user-avatar-initials" style="width: 40px; height: 40px; font-size: 0.9rem;">U</div>
+                <div style="flex:1; overflow:hidden;">
+                    <div class="text-sm font-semibold user-display-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">User</div>
+                    <div class="text-xs text-muted" id="user-role-display">Student</div>
+                </div>
+            </div>
+            <button id="logout-btn" class="btn btn-secondary btn-full btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">Welcome back, <span class="user-display-name gradient-text">User</span>! 👋</h1>
+                <p class="page-subtitle">Here is an overview of your career progress.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="theme-toggle" class="theme-toggle"><i class="bi bi-moon-stars-fill"></i></button>
+                <div class="relative">
+                    <button class="theme-toggle" id="notification-btn"><i class="bi bi-bell"></i></button>
+                    <span id="notif-badge" class="absolute hidden" style="top: -2px; right: -2px; width: 12px; height: 12px; background: var(--error); border-radius: 50%; border: 2px solid var(--bg-primary);"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-4 mb-6">
+            <div class="stat-card animate-fadeInUp delay-1">
+                <div class="stat-icon blue"><i class="bi bi-lightning-charge"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value" id="stat-career-score">--</div>
+                    <div class="stat-label">Career Readiness Score</div>
+                </div>
+            </div>
+            <div class="stat-card animate-fadeInUp delay-2">
+                <div class="stat-icon purple"><i class="bi bi-tools"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value" id="stat-skills">--</div>
+                    <div class="stat-label">Total Skills Added</div>
+                </div>
+            </div>
+            <div class="stat-card animate-fadeInUp delay-3">
+                <div class="stat-icon orange"><i class="bi bi-magic"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value" id="stat-recs" style="font-size: 1.2rem; margin-top:8px;">--</div>
+                    <div class="stat-label">Top Recommendation</div>
+                </div>
+            </div>
+            <div class="stat-card animate-fadeInUp delay-4">
+                <div class="stat-icon green"><i class="bi bi-file-earmark-check"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value" id="stat-resume">--</div>
+                    <div class="stat-label">Resume ATS Score</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-2">
+            <!-- Skills Chart -->
+            <div class="card animate-fadeInUp delay-2">
+                <h3 class="mb-4 text-lg">Skills Distribution</h3>
+                <div style="height: 300px; display: flex; align-items: center; justify-content: center;">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Action Items -->
+            <div class="card animate-fadeInUp delay-3">
+                <h3 class="mb-4 text-lg">Next Steps to Success</h3>
+                
+                <div class="flex flex-col gap-3" id="action-items">
+                    <!-- Dynamic actions will be rendered here -->
+                    <div class="p-4 border rounded-md text-center text-muted" style="border: 1px dashed var(--border-color); border-radius: var(--radius-md);">
+                        Loading next steps...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar + AI Suggestions -->
+        <div class="grid grid-2 mt-4">
+            <div class="card animate-fadeInUp delay-3">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg">Learning Calendar</h3>
+                    <div class="flex gap-2 items-center">
+                        <button class="btn btn-sm btn-secondary" id="cal-prev" style="padding:4px 10px;"><i class="bi bi-chevron-left"></i></button>
+                        <span id="cal-month-label" class="font-semibold text-primary" style="min-width:120px;text-align:center;font-size:0.9rem;"></span>
+                        <button class="btn btn-sm btn-secondary" id="cal-next" style="padding:4px 10px;"><i class="bi bi-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div id="calendar-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:0.8rem;"></div>
+            </div>
+
+            <div class="card animate-fadeInUp delay-4">
+                <h3 class="text-lg mb-4"><i class="bi bi-robot text-primary mr-2"></i>AI Suggestions</h3>
+                <div class="flex flex-col gap-3">
+                    <div class="p-3 rounded-md" style="border-left:3px solid var(--primary);background:var(--primary-50);">
+                        <p class="text-sm font-semibold m-0 mb-1">Complete Skills Profile</p>
+                        <p class="text-xs text-muted m-0">Add at least 5 skills for better match accuracy.</p>
+                    </div>
+                    <div class="p-3 rounded-md" style="border-left:3px solid var(--success);background:rgba(16,185,129,0.08);">
+                        <p class="text-sm font-semibold m-0 mb-1">Upload Your Resume</p>
+                        <p class="text-xs text-muted m-0">Analyze your PDF for ATS optimization tips.</p>
+                    </div>
+                    <div class="p-3 rounded-md" style="border-left:3px solid var(--warning);background:rgba(245,158,11,0.08);">
+                        <p class="text-sm font-semibold m-0 mb-1">Take Interest Assessment</p>
+                        <p class="text-xs text-muted m-0">Unlock top AI career matches in 10 questions.</p>
+                    </div>
+                    <div class="p-3 rounded-md" style="border-left:3px solid #06b6d4;background:rgba(6,182,212,0.08);">
+                        <p class="text-sm font-semibold m-0 mb-1">Practice Mock Interviews</p>
+                        <p class="text-xs text-muted m-0">Use AI-generated Q&A to ace your next interview.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // ── AUTH GUARD: Redirect to login if not authenticated ──
+            const token = localStorage.getItem('careerpro_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('user-role-display').textContent = localStorage.getItem('careerpro_user_role') === 'ROLE_ADMIN' ? 'Administrator' : 'Student';
+            
+            try {
+                ui.showLoading('Loading dashboard...');
+                const res = await api.get('/dashboard');
+                if(res.success) {
+                    const data = res.data;
+                    
+                    // Update Stats
+                    document.getElementById('stat-career-score').textContent = data.careerScore + '/100';
+                    document.getElementById('stat-skills').textContent = data.totalSkills;
+                    
+                    if (data.hasRecommendations && data.topCareerMatch) {
+                        document.getElementById('stat-recs').textContent = data.topCareerMatch.title;
+                        document.getElementById('stat-recs').style.fontSize = data.topCareerMatch.title.length > 20 ? '1rem' : '1.2rem';
+                    } else {
+                        document.getElementById('stat-recs').textContent = 'Not Generated';
+                    }
+
+                    document.getElementById('stat-resume').textContent = data.resumeScore ? data.resumeScore + '/100' : 'Not Uploaded';
+
+                    // Notifications badge
+                    if (data.unreadNotifications > 0) {
+                        document.getElementById('notif-badge').classList.remove('hidden');
+                    }
+
+                    // Render Action Items
+                    renderActionItems(data);
+
+                    // Render Chart
+                    renderSkillsChart(data.skillsByCategory);
+                }
+                ui.hideLoading();
+            } catch (error) {
+                ui.hideLoading();
+                ui.showToast('Failed to load dashboard data', 'error');
+            }
+        });
+
+        function renderActionItems(data) {
+            const container = document.getElementById('action-items');
+            container.innerHTML = '';
+            
+            const actions = [];
+            
+            if (data.totalSkills < 5) {
+                actions.push({ title: 'Add More Skills', desc: 'Add at least 5 skills for better AI analysis.', link: 'skill-assessment.html', icon: 'bi-plus-circle' });
+            }
+            if (!data.assessmentTaken) {
+                actions.push({ title: 'Take Interest Test', desc: 'Complete the career interest questionnaire.', link: 'interest-assessment.html', icon: 'bi-compass' });
+            }
+            if (!data.hasRecommendations && data.totalSkills > 0) {
+                actions.push({ title: 'Generate Career Match', desc: 'Use AI to find your perfect career path.', link: 'career-recommendation.html', icon: 'bi-magic' });
+            }
+            if (!data.resumeScore) {
+                actions.push({ title: 'Analyze Resume', desc: 'Upload your resume for ATS scoring.', link: 'resume-analyzer.html', icon: 'bi-file-earmark-pdf' });
+            }
+            if (!data.learningProgress && data.hasRecommendations) {
+                actions.push({ title: 'Create Roadmap', desc: 'Generate a learning path for your target career.', link: 'learning-roadmap.html', icon: 'bi-map' });
+            }
+
+            if (actions.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding: 20px;">
+                        <i class="bi bi-check-circle text-success mb-2" style="font-size:2rem;"></i>
+                        <p class="font-semibold text-success">You are all caught up!</p>
+                        <p class="text-sm text-muted">Keep practicing with AI mock interviews.</p>
+                        <a href="interview-prep.html" class="btn btn-primary btn-sm mt-3">Practice Interview</a>
+                    </div>
+                `;
+                return;
+            }
+
+            actions.forEach(act => {
+                const item = document.createElement('div');
+                item.style.cssText = `
+                    display: flex; align-items: center; justify-content: space-between;
+                    padding: 16px; border: 1px solid var(--border-color);
+                    border-radius: var(--radius-md); background: var(--bg-primary);
+                `;
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div style="width: 40px; height: 40px; border-radius: 8px; background: var(--primary-100); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                            <i class="bi ${act.icon}"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin:0; font-size: 0.95rem;">${act.title}</h4>
+                            <p style="margin:0; font-size: 0.8rem; color: var(--text-secondary);">${act.desc}</p>
+                        </div>
+                    </div>
+                    <a href="${act.link}" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.8rem;">Action</a>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function renderSkillsChart(skillsMap) {
+            const ctx = document.getElementById('skillsChart');
+            if (!skillsMap || Object.keys(skillsMap).length === 0) {
+                ctx.parentElement.innerHTML = '<p class="text-muted text-center w-full">No skills added yet.</p>';
+                return;
+            }
+
+            const labels = Object.keys(skillsMap);
+            const data = Object.values(skillsMap);
+            
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            '#2563eb', '#7c3aed', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#8b5cf6'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: isDark ? '#f1f5f9' : '#0f172a' } }
+                    }
+                }
+            });
+        }
+
+        // ---- Vanilla JS Calendar ----
+        let calDate = new Date();
+
+        function renderCalendar(date) {
+            const grid = document.getElementById('calendar-grid');
+            const label = document.getElementById('cal-month-label');
+            grid.innerHTML = '';
+
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const today = new Date();
+
+            const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            label.textContent = `${monthNames[month]} ${year}`;
+
+            // Day headers
+            dayNames.forEach(day => {
+                const h = document.createElement('div');
+                h.style.cssText = 'font-weight:700;color:var(--text-secondary);padding:4px 0;font-size:0.7rem;';
+                h.textContent = day;
+                grid.appendChild(h);
+            });
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Empty cells before first day
+            for (let i = 0; i < firstDay; i++) {
+                grid.appendChild(document.createElement('div'));
+            }
+
+            // Day cells
+            for (let d = 1; d <= daysInMonth; d++) {
+                const cell = document.createElement('div');
+                cell.textContent = d;
+                cell.style.cssText = 'padding:6px 2px;border-radius:6px;cursor:default;';
+
+                const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+                const isCheckIn = d === 1; // Mark 1st of month as roadmap check-in
+
+                if (isToday) {
+                    cell.style.background = 'var(--primary)';
+                    cell.style.color = 'white';
+                    cell.style.fontWeight = '700';
+                } else if (isCheckIn) {
+                    cell.style.background = 'rgba(16,185,129,0.15)';
+                    cell.style.color = 'var(--success)';
+                    cell.style.fontWeight = '600';
+                    cell.title = 'Roadmap Check-In Day';
+                } else {
+                    cell.style.color = 'var(--text-primary)';
+                }
+                grid.appendChild(cell);
+            }
+        }
+
+        document.getElementById('cal-prev').addEventListener('click', () => {
+            calDate.setMonth(calDate.getMonth() - 1);
+            renderCalendar(calDate);
+        });
+        document.getElementById('cal-next').addEventListener('click', () => {
+            calDate.setMonth(calDate.getMonth() + 1);
+            renderCalendar(calDate);
+        });
+
+        // Initialize calendar on page load
+        renderCalendar(calDate);
+
+    </script>
+</body>
+</html>

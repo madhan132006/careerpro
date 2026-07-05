@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerPro AI - Intelligent Career Guidance</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Landing Page Specific Styles */
+        .hero-section {
+            padding: 160px 0 100px;
+            background: var(--gradient-hero);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            color: white;
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            color: var(--gray-300);
+            margin-bottom: 40px;
+            max-width: 500px;
+        }
+
+        .hero-image {
+            position: relative;
+        }
+
+        .glass-card-mockup {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transform: perspective(1000px) rotateY(-10deg) rotateX(5deg);
+            transition: transform 0.5s ease;
+        }
+
+        .glass-card-mockup:hover {
+            transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+        }
+
+        /* Abstract shapes */
+        .shape {
+            position: absolute;
+            filter: blur(60px);
+            z-index: 1;
+            border-radius: 50%;
+        }
+
+        .shape-1 {
+            width: 400px; height: 400px;
+            background: rgba(37,99,235,0.4);
+            top: -100px; right: -100px;
+        }
+
+        .shape-2 {
+            width: 300px; height: 300px;
+            background: rgba(124,58,237,0.4);
+            bottom: -50px; left: 30%;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 40px 30px;
+        }
+
+        .feature-icon {
+            width: 70px; height: 70px;
+            background: var(--primary-50);
+            color: var(--primary);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 24px;
+            transition: all var(--transition-base);
+        }
+
+        .feature-card:hover .feature-icon {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .stats-section {
+            background: var(--bg-card);
+            padding: 60px 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 992px) {
+            .hero-content { grid-template-columns: 1fr; text-align: center; }
+            .hero-text p { margin: 0 auto 40px; }
+            .hero-text h1 { font-size: 2.8rem; }
+            .feature-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 40px;}
+        }
+
+        @media (max-width: 768px) {
+            .feature-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="index.html" class="navbar-brand">
+                <div class="brand-icon"><i class="bi bi-robot"></i></div>
+                CareerPro AI
+            </a>
+            
+            <ul class="navbar-nav hidden-mobile">
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#how-it-works" class="nav-link">How it Works</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+
+            <div class="navbar-actions">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </button>
+                <a href="pages/login.html" class="btn btn-secondary btn-sm">Log in</a>
+                <a href="pages/register.html" class="btn btn-primary btn-sm">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="shape shape-1 animate-float"></div>
+        <div class="shape shape-2 animate-float delay-2"></div>
+        
+        <div class="container hero-content">
+            <div class="hero-text animate-fadeInUp">
+                <h1>Discover Your Perfect Career Path with <span class="gradient-text">Google Gemini AI</span></h1>
+                <p>Upload your resume, assess your skills, and let our advanced AI generate a personalized career roadmap and interview prep tailored just for you.</p>
+                
+                <div class="flex gap-4" style="justify-content: flex-start;">
+                    <a href="pages/register.html" class="btn btn-primary btn-lg">Start Free Assessment <i class="bi bi-arrow-right"></i></a>
+                </div>
+                
+                <div class="mt-6 flex items-center gap-2" style="color: var(--gray-300); font-size: 0.9rem;">
+                    <div class="stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                    <span>Trusted by 10,000+ students globally</span>
+                </div>
+            </div>
+
+            <div class="hero-image animate-fadeInUp delay-2">
+                <div class="glass-card-mockup">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="avatar" style="width: 48px; height: 48px;">AI</div>
+                        <div>
+                            <h3 style="color: white; font-size: 1.1rem; margin:0;">AI Recommendation Result</h3>
+                            <p style="color: #94a3b8; font-size: 0.85rem; margin:0;">Analysis Complete</p>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+                        <h4 style="color: #60a5fa; margin-bottom: 4px;">Top Match: Full Stack Developer</h4>
+                        <div class="progress-container mt-2 mb-2" style="background: rgba(255,255,255,0.1)">
+                            <div class="progress-bar" style="width: 92%"></div>
+                        </div>
+                        <span style="color: white; font-size: 0.8rem;">92% Match Score</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">
+                            <i class="bi bi-graph-up-arrow" style="color: #34d399; font-size: 1.2rem;"></i>
+                            <p style="color: white; font-size: 0.85rem; margin-top: 4px;">High Demand</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">
+                            <i class="bi bi-cash-stack" style="color: #fbbf24; font-size: 1.2rem;"></i>
+                            <p style="color: white; font-size: 0.85rem; margin-top: 4px;">₹8L - ₹15L /yr</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats-section">
+        <div class="container stats-grid">
+            <div class="stat-item">
+                <h3>95%</h3>
+                <p class="text-muted font-semibold">Prediction Accuracy</p>
+            </div>
+            <div class="stat-item">
+                <h3>15K+</h3>
+                <p class="text-muted font-semibold">Resumes Analyzed</p>
+            </div>
+            <div class="stat-item">
+                <h3>50+</h3>
+                <p class="text-muted font-semibold">Career Domains</p>
+            </div>
+            <div class="stat-item">
+                <h3>24/7</h3>
+                <p class="text-muted font-semibold">AI Interview Prep</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="section">
+        <div class="container">
+            <h2 class="section-title">Everything You Need to Succeed</h2>
+            <p class="section-subtitle">Powered by Google Gemini 1.5 Flash, our platform provides comprehensive tools to bridge the gap between education and employment.</p>
+            
+            <div class="feature-grid">
+                <div class="card feature-card animate-fadeInUp delay-1">
+                    <div class="feature-icon"><i class="bi bi-magic"></i></div>
+                    <h3 class="mb-3">AI Career Match</h3>
+                    <p class="text-muted">Analyzes your skills, interests, and academics to suggest the top 5 most suitable career paths with confidence scores.</p>
+                </div>
+                
+                <div class="card feature-card animate-fadeInUp delay-2">
+                    <div class="feature-icon"><i class="bi bi-file-earmark-pdf"></i></div>
+                    <h3 class="mb-3">Resume Analyzer</h3>
+                    <p class="text-muted">Upload your PDF resume. Our AI extracts skills, scores it for ATS compatibility, and provides improvement tips.</p>
+                </div>
+                
+                <div class="card feature-card animate-fadeInUp delay-3">
+                    <div class="feature-icon"><i class="bi bi-map"></i></div>
+                    <h3 class="mb-3">Custom Roadmaps</h3>
+                    <p class="text-muted">Get a personalized 12-week learning roadmap based on your skill gaps, complete with recommended courses.</p>
+                </div>
+                
+                <div class="card feature-card animate-fadeInUp delay-1">
+                    <div class="feature-icon"><i class="bi bi-person-video3"></i></div>
+                    <h3 class="mb-3">Mock Interviews</h3>
+                    <p class="text-muted">Generate role-specific technical, HR, and behavioral questions with AI-crafted model answers for practice.</p>
+                </div>
+                
+                <div class="card feature-card animate-fadeInUp delay-2">
+                    <div class="feature-icon"><i class="bi bi-bar-chart"></i></div>
+                    <h3 class="mb-3">Skill Gap Analysis</h3>
+                    <p class="text-muted">Compare your current skills against industry requirements and identify exactly what you need to learn next.</p>
+                </div>
+                
+                <div class="card feature-card animate-fadeInUp delay-3">
+                    <div class="feature-icon"><i class="bi bi-journal-bookmark"></i></div>
+                    <h3 class="mb-3">Course Recommendations</h3>
+                    <p class="text-muted">Discover top-rated free and paid courses from Udemy, Coursera, and YouTube curated for your goals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works (Timeline) -->
+    <section id="how-it-works" class="section" style="background: var(--bg-card); border-top: 1px solid var(--border-color);">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">A simple 4-step process to unlock your dream career</p>
+            
+            <div style="max-width: 800px; margin: 0 auto; padding-left: 20px; border-left: 3px solid var(--primary-100); position: relative;">
+                
+                <div style="position: relative; margin-bottom: 40px; padding-left: 30px;" class="animate-fadeInUp delay-1">
+                    <div style="position: absolute; left: -14px; top: 0; width: 24px; height: 24px; background: var(--primary); border-radius: 50%; border: 4px solid var(--bg-card);"></div>
+                    <h3 style="font-size: 1.3rem; margin-bottom: 8px; color: var(--primary);">1. Profile & Skills Setup</h3>
+                    <p class="text-muted">Register and complete your academic profile. Add your technical and soft skills along with your proficiency levels.</p>
+                </div>
+
+                <div style="position: relative; margin-bottom: 40px; padding-left: 30px;" class="animate-fadeInUp delay-2">
+                    <div style="position: absolute; left: -14px; top: 0; width: 24px; height: 24px; background: var(--primary); border-radius: 50%; border: 4px solid var(--bg-card);"></div>
+                    <h3 style="font-size: 1.3rem; margin-bottom: 8px; color: var(--primary);">2. AI Resume & Interest Analysis</h3>
+                    <p class="text-muted">Take our 2-minute career interest questionnaire and upload your PDF resume for instant ATS scoring and parsing.</p>
+                </div>
+
+                <div style="position: relative; margin-bottom: 40px; padding-left: 30px;" class="animate-fadeInUp delay-3">
+                    <div style="position: absolute; left: -14px; top: 0; width: 24px; height: 24px; background: var(--primary); border-radius: 50%; border: 4px solid var(--bg-card);"></div>
+                    <h3 style="font-size: 1.3rem; margin-bottom: 8px; color: var(--primary);">3. Get AI Recommendations</h3>
+                    <p class="text-muted">Gemini AI analyzes your unique data profile to recommend the top 5 most suitable career paths with confidence scores.</p>
+                </div>
+
+                <div style="position: relative; padding-left: 30px;" class="animate-fadeInUp delay-4">
+                    <div style="position: absolute; left: -14px; top: 0; width: 24px; height: 24px; background: var(--primary); border-radius: 50%; border: 4px solid var(--bg-card);"></div>
+                    <h3 style="font-size: 1.3rem; margin-bottom: 8px; color: var(--primary);">4. Roadmap & Mock Interviews</h3>
+                    <p class="text-muted">Generate a customized week-by-week learning roadmap to bridge your skill gaps and practice with AI-generated interview questions.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Benefits -->
+    <section class="section">
+        <div class="container text-center">
+            <h2 class="section-title">The Power of Google Gemini AI</h2>
+            <p class="section-subtitle">Why our AI-driven approach is better than traditional career counseling.</p>
+            
+            <div class="grid grid-3">
+                <div class="card p-6 animate-fadeInUp delay-1">
+                    <i class="bi bi-lightning-charge text-warning" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-4 mb-2">Real-Time Industry Data</h3>
+                    <p class="text-muted text-sm">Our AI is constantly updated with the latest job market trends, ensuring recommendations are highly relevant.</p>
+                </div>
+                <div class="card p-6 animate-fadeInUp delay-2">
+                    <i class="bi bi-bullseye text-error" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-4 mb-2">Hyper-Personalized</h3>
+                    <p class="text-muted text-sm">Every roadmap and mock interview is generated specifically for your unique combination of skills and goals.</p>
+                </div>
+                <div class="card p-6 animate-fadeInUp delay-3">
+                    <i class="bi bi-clock-history text-primary" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-4 mb-2">Instant Feedback</h3>
+                    <p class="text-muted text-sm">No waiting days for a resume review or career advice. Get comprehensive analysis in seconds.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section" style="background: var(--bg-card); border-top: 1px solid var(--border-color);">
+        <div class="container text-center">
+            <h2 class="section-title">Success Stories</h2>
+            <p class="section-subtitle">See how CareerPro AI is helping students launch their careers.</p>
+            
+            <div class="grid grid-3 text-left">
+                <div class="card p-6 animate-fadeInUp delay-1">
+                    <div class="stars mb-3"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                    <p class="text-muted text-sm mb-4">"The AI interview prep was a game changer. The questions it generated were incredibly close to what I was actually asked in my final round."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="avatar" style="width: 40px; height: 40px; font-size: 0.9rem;">SJ</div>
+                        <div>
+                            <h4 class="text-sm">Sarah Jenkins</h4>
+                            <p class="text-xs text-muted">Software Engineer at TechCorp</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-6 animate-fadeInUp delay-2">
+                    <div class="stars mb-3"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                    <p class="text-muted text-sm mb-4">"I had no idea what career suited me. The AI analyzed my skills and suggested Data Science. The learning roadmap guided me for 12 weeks straight."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="avatar" style="width: 40px; height: 40px; font-size: 0.9rem; background: var(--success);">MK</div>
+                        <div>
+                            <h4 class="text-sm">Michael Kim</h4>
+                            <p class="text-xs text-muted">Junior Data Analyst</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-6 animate-fadeInUp delay-3">
+                    <div class="stars mb-3"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                    <p class="text-muted text-sm mb-4">"The Resume Analyzer caught so many formatting issues I missed. After applying the AI's suggestions, my ATS score went from 40% to 92%!"</p>
+                    <div class="flex items-center gap-3">
+                        <div class="avatar" style="width: 40px; height: 40px; font-size: 0.9rem; background: var(--warning);">PR</div>
+                        <div>
+                            <h4 class="text-sm">Priya Patel</h4>
+                            <p class="text-xs text-muted">UX Designer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="section-subtitle">Everything you need to know about CareerPro AI.</p>
+            
+            <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px;">
+                <div class="card" style="padding: 20px;">
+                    <h3 class="text-lg mb-2 flex justify-between items-center cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                        Is CareerPro AI completely free to use?
+                        <i class="bi bi-chevron-down text-muted"></i>
+                    </h3>
+                    <p class="text-muted text-sm mt-2 hidden">Yes! This platform is developed as a final year project and is completely free for all students to use to evaluate and improve their career prospects.</p>
+                </div>
+                
+                <div class="card" style="padding: 20px;">
+                    <h3 class="text-lg mb-2 flex justify-between items-center cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                        How accurate is the AI Resume Analyzer?
+                        <i class="bi bi-chevron-down text-muted"></i>
+                    </h3>
+                    <p class="text-muted text-sm mt-2 hidden">We utilize Google Gemini 1.5 Flash to parse and score resumes against industry-standard ATS metrics. While highly accurate, we always recommend having a human review your resume as well.</p>
+                </div>
+
+                <div class="card" style="padding: 20px;">
+                    <h3 class="text-lg mb-2 flex justify-between items-center cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                        What kind of data do you collect?
+                        <i class="bi bi-chevron-down text-muted"></i>
+                    </h3>
+                    <p class="text-muted text-sm mt-2 hidden">We only collect the academic and professional data you explicitly provide in your profile, skills, and resume. Your data is securely stored and never shared with third parties.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section id="contact" class="section" style="background: var(--gradient-card);">
+        <div class="container grid grid-2" style="align-items: center;">
+            <div>
+                <h2 class="section-title" style="text-align: left;">Get in Touch</h2>
+                <p class="section-subtitle" style="text-align: left; margin-bottom: 24px;">Have questions or feedback? We'd love to hear from you.</p>
+                <div class="flex flex-col gap-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="avatar" style="width: 40px; height: 40px; background: white; color: var(--primary);"><i class="bi bi-envelope"></i></div>
+                        <span class="font-semibold">support@careerpro.ai</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="avatar" style="width: 40px; height: 40px; background: white; color: var(--primary);"><i class="bi bi-geo-alt"></i></div>
+                        <span class="font-semibold">Project Lab, CS Department</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card p-6 animate-fadeInUp delay-2">
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" id="contactName" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="contactEmail" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subject</label>
+                        <input type="text" id="contactSubject" class="form-control" placeholder="Subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea id="contactMessage" class="form-control" rows="4" placeholder="How can we help you?" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full" id="contactBtn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        // Contact form handler specifically for landing page
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('contact-form');
+            if(form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const btn = document.getElementById('contactBtn');
+                    try {
+                        btn.disabled = true;
+                        btn.innerHTML = 'Sending...';
+                        
+                        const data = {
+                            name: document.getElementById('contactName').value,
+                            email: document.getElementById('contactEmail').value,
+                            subject: document.getElementById('contactSubject').value,
+                            message: document.getElementById('contactMessage').value,
+                            rating: 5
+                        };
+                        
+                        const res = await fetch('http://localhost:8080/api/feedback', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        });
+                        
+                        if(res.ok) {
+                            if(typeof ui !== 'undefined') ui.showToast('Message sent successfully!');
+                            else alert('Message sent successfully!');
+                            form.reset();
+                        }
+                    } catch(err) {
+                        if(typeof ui !== 'undefined') ui.showToast('Failed to send message', 'error');
+                        else alert('Failed to send message');
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerHTML = 'Send Message';
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer style="background: var(--bg-card); border-top: 1px solid var(--border-color); padding: 40px 0 20px;">
+        <div class="container text-center">
+            <div class="brand-icon mx-auto mb-4" style="margin: 0 auto;"><i class="bi bi-robot"></i></div>
+            <h4 class="mb-2">CareerPro AI</h4>
+            <p class="text-muted mb-6" style="max-width: 400px; margin: 0 auto 24px;">Intelligent Career Recommendation System Using Java, Spring Boot, MySQL and Google Gemini AI.</p>
+            <p class="text-muted text-sm">© 2026 CareerPro AI Project. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+</body>
+</html>

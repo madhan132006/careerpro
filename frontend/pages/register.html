@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - CareerPro AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(30, 27, 75, 0.92)), url('../images/register-bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            padding: 40px 20px;
+        }
+        .auth-container {
+            width: 100%;
+            max-width: 500px;
+        }
+        .auth-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 40px 30px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .auth-logo {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 16px;
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <div class="auth-container">
+        <div class="auth-card animate-fadeInUp">
+            <div class="auth-header">
+                <div class="auth-logo"><i class="bi bi-robot"></i></div>
+                <h2 style="font-size: 1.75rem; margin-bottom: 8px;">Create Account</h2>
+                <p class="text-muted">Start your AI-powered career journey.</p>
+            </div>
+
+            <form id="register-form" novalidate>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="fullName" class="form-control" placeholder="John Doe" required>
+                    <div class="error-msg text-error text-xs mt-1 hidden" id="err-fullName">Please enter your full name.</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="email" class="form-control" placeholder="john@example.com" required>
+                    <div class="error-msg text-error text-xs mt-1 hidden" id="err-email">Please enter a valid email address.</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" id="phone" class="form-control" placeholder="1234567890" pattern="[0-9]{10}" required>
+                    <div class="error-msg text-error text-xs mt-1 hidden" id="err-phone">Please enter a valid 10-digit phone number.</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Minimum 8 characters" required>
+                    <div class="error-msg text-error text-xs mt-1 hidden" id="err-password">Password must be at least 8 characters, include 1 uppercase, 1 number, and 1 special character.</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm your password" required>
+                    <div class="error-msg text-error text-xs mt-1 hidden" id="err-confirmPassword">Passwords do not match.</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full mt-4" id="submit-btn">
+                    Create Account <i class="bi bi-person-plus"></i>
+                </button>
+            </form>
+
+            <div class="text-center mt-6 text-sm text-muted">
+                Already have an account? <a href="login.html" class="text-primary font-semibold">Sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        const form = document.getElementById('register-form');
+        const inputs = form.querySelectorAll('input');
+
+        // Validation Rules
+        const rules = {
+            fullName: (val) => val.trim().length > 2,
+            email: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+            phone: (val) => /^\d{10}$/.test(val),
+            password: (val) => /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(val),
+            confirmPassword: (val) => val === document.getElementById('password').value && val.length > 0
+        };
+
+        // Real-time validation
+        inputs.forEach(input => {
+            input.addEventListener('input', () => validateField(input));
+            input.addEventListener('blur', () => validateField(input));
+        });
+
+        function validateField(input) {
+            const id = input.id;
+            const isValid = rules[id](input.value);
+            const errDiv = document.getElementById('err-' + id);
+            
+            if (!isValid && input.value.length > 0) {
+                input.style.borderColor = 'var(--error)';
+                if (errDiv) errDiv.classList.remove('hidden');
+            } else if (isValid) {
+                input.style.borderColor = 'var(--success)';
+                if (errDiv) errDiv.classList.add('hidden');
+            } else {
+                input.style.borderColor = 'var(--border-color)';
+                if (errDiv) errDiv.classList.add('hidden');
+            }
+            return isValid;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            let isFormValid = true;
+            inputs.forEach(input => {
+                if (!validateField(input)) isFormValid = false;
+            });
+
+            if (!isFormValid) {
+                ui.showToast('Please fix the errors in the form', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('submit-btn');
+            const data = {
+                fullName: document.getElementById('fullName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                password: document.getElementById('password').value
+            };
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;margin-right:8px;"></span> Registering...';
+                
+                const res = await api.post('/auth/register', data);
+                if (res.success) {
+                    auth.setSession(res.data);
+                    ui.showToast(res.message);
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                }
+            } catch (error) {
+                ui.showToast(error.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = 'Create Account <i class="bi bi-person-plus"></i>';
+            }
+        });
+    </script>
+</body>
+</html>

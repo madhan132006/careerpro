@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Prep - CareerPro AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .question-item {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .question-header {
+            background: var(--bg-card);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+        .question-header:hover {
+            background: var(--gray-50);
+        }
+        .question-body {
+            background: var(--gray-50);
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: none;
+        }
+        .question-body.open {
+            display: block;
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <aside class="sidebar" id="sidebar">
+        <!-- Sidebar content same as others -->
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-robot"></i></div>
+            <span style="font-weight: 800; font-size: 1.1rem; color: var(--text-primary);">CareerPro AI</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Main</div>
+            <a href="dashboard.html" class="sidebar-link"><span class="link-icon"><i class="bi bi-grid-1x2"></i></span> Dashboard</a>
+            <a href="profile.html" class="sidebar-link"><span class="link-icon"><i class="bi bi-person"></i></span> Profile</a>
+            
+            <div class="nav-section-title">Assessments</div>
+            <a href="skill-assessment.html" class="sidebar-link"><span class="link-icon"><i class="bi bi-tools"></i></span> Skills</a>
+            <a href="interest-assessment.html" class="sidebar-link"><span class="link-icon"><i class="bi bi-compass"></i></span> Career Interest</a>
+
+            <div class="nav-section-title">AI Modules</div>
+            <a href="career-recommendation.html" class="sidebar-link"><span class="link-icon"><i class="bi bi-magic"></i></span> Career Match</a>
+            <a href="learning-roadmap.html" class="sidebar-link"><span class="link-icon"><i class="bi bi-map"></i></span> Learning Roadmap</a>
+            <a href="resume-analyzer.html" class="sidebar-link"><span class="link-icon"><i class="bi bi-file-earmark-pdf"></i></span> Resume Analyzer</a>
+            <a href="interview-prep.html" class="sidebar-link active"><span class="link-icon"><i class="bi bi-person-video3"></i></span> Interview Prep</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">Mock Interview Preparation</h1>
+                <p class="page-subtitle">Generate custom interview questions and model answers based on your profile.</p>
+            </div>
+            <button id="theme-toggle" class="theme-toggle"><i class="bi bi-moon-stars-fill"></i></button>
+        </header>
+
+        <div class="card mb-6 animate-fadeInUp delay-1">
+            <form id="generate-form" class="grid grid-3" style="gap: 16px; align-items: end;">
+                <div class="form-group mb-0">
+                    <label class="form-label">Target Role</label>
+                    <input type="text" id="role" class="form-control" placeholder="e.g. Frontend Developer" required>
+                </div>
+                <div class="form-group mb-0">
+                    <label class="form-label">Interview Type</label>
+                    <select id="type" class="form-control form-select">
+                        <option value="TECHNICAL">Technical Questions</option>
+                        <option value="HR">HR / Behavioral</option>
+                        <option value="CASE_STUDY">Case Study / Scenario</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" id="generate-btn">
+                    <i class="bi bi-magic"></i> Generate Questions
+                </button>
+            </form>
+        </div>
+
+        <div id="questions-container" class="animate-fadeInUp delay-2">
+            <!-- Questions rendered here -->
+            <div class="text-center py-10 text-muted border rounded-md" style="border-style: dashed;">
+                <i class="bi bi-person-video3 mb-2" style="font-size: 2rem;"></i>
+                <p>Fill out the form above to generate practice questions.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('generate-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('generate-btn');
+                const role = document.getElementById('role').value;
+                const type = document.getElementById('type').value;
+
+                try {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;margin-right:8px;"></span> Generating...';
+                    
+                    const res = await api.post('/interview/generate', { careerTitle: role, questionType: type });
+                    if(res.success && res.data) {
+                        ui.showToast('Questions generated successfully');
+                        renderQuestions(res.data);
+                    }
+                } catch(err) {
+                    ui.showToast(err.message, 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-magic"></i> Generate Questions';
+                }
+            });
+            
+            // Auto load existing
+            loadExisting();
+        });
+
+        async function loadExisting() {
+            try {
+                const res = await api.get('/interview/questions');
+                if(res.success && res.data && res.data.length > 0) {
+                    renderQuestions(res.data);
+                }
+            } catch(e) {}
+        }
+
+        function renderQuestions(questions) {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            questions.forEach((q, i) => {
+                let badgeClass = 'badge-primary';
+                if(q.difficulty === 'HARD') badgeClass = 'badge-error';
+                if(q.difficulty === 'EASY') badgeClass = 'badge-success';
+
+                const item = document.createElement('div');
+                item.className = 'question-item';
+                item.innerHTML = `
+                    <div class="question-header" onclick="this.nextElementSibling.classList.toggle('open')">
+                        <div style="font-weight: 600; font-size: 0.95rem; max-width: 80%;">
+                            <span class="text-primary mr-2">Q${i+1}.</span> ${q.question}
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="badge ${badgeClass}">${q.difficulty}</span>
+                            <i class="bi bi-chevron-down text-muted"></i>
+                        </div>
+                    </div>
+                    <div class="question-body">
+                        <h4 class="text-sm font-semibold mb-2 text-success"><i class="bi bi-check-circle"></i> AI Model Answer</h4>
+                        <div class="text-sm text-muted" style="white-space: pre-wrap; line-height: 1.6;">${q.modelAnswer}</div>
+                        ${q.tips ? `
+                        <div class="mt-4 p-3 bg-blue-50 border rounded-md" style="border-left: 4px solid var(--info);">
+                            <h4 class="text-sm font-semibold text-info mb-1"><i class="bi bi-lightbulb"></i> Pro Tip</h4>
+                            <p class="text-sm m-0">${q.tips}</p>
+                        </div>` : ''}
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+    </script>
+</body>
+</html>

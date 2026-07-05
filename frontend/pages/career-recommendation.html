@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Match - CareerPro AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-theme="light">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-robot"></i></div>
+            <span style="font-weight: 800; font-size: 1.1rem; color: var(--text-primary);">CareerPro AI</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Main</div>
+            <a href="dashboard.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-grid-1x2"></i></span> Dashboard
+            </a>
+            <a href="profile.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-person"></i></span> Profile
+            </a>
+            
+            <div class="nav-section-title">Assessments</div>
+            <a href="skill-assessment.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-tools"></i></span> Skills
+            </a>
+            <a href="interest-assessment.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-compass"></i></span> Career Interest
+            </a>
+
+            <div class="nav-section-title">AI Modules</div>
+            <a href="career-recommendation.html" class="sidebar-link active">
+                <span class="link-icon"><i class="bi bi-magic"></i></span> Career Match
+            </a>
+            <a href="learning-roadmap.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-map"></i></span> Learning Roadmap
+            </a>
+            <a href="resume-analyzer.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-file-earmark-pdf"></i></span> Resume Analyzer
+            </a>
+            <a href="interview-prep.html" class="sidebar-link">
+                <span class="link-icon"><i class="bi bi-person-video3"></i></span> Interview Prep
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">AI Career Match</h1>
+                <p class="page-subtitle">Based on your skills and interests, Gemini AI has recommended these career paths.</p>
+            </div>
+            <div class="flex gap-2">
+                <button id="generate-btn" class="btn btn-primary">
+                    <i class="bi bi-magic"></i> Generate Recommendations
+                </button>
+                <button id="theme-toggle" class="theme-toggle"><i class="bi bi-moon-stars-fill"></i></button>
+            </div>
+        </header>
+
+        <div id="no-recs" class="text-center py-10 hidden">
+            <div style="font-size: 3rem; color: var(--gray-300); margin-bottom: 16px;"><i class="bi bi-inboxes"></i></div>
+            <h3 class="text-lg">No recommendations yet</h3>
+            <p class="text-muted mb-4">Click generate to let AI analyze your profile and find your best career matches.</p>
+            <p class="text-xs text-warning"><i class="bi bi-exclamation-triangle"></i> Make sure you have added skills and completed the interest assessment first.</p>
+        </div>
+
+        <div id="recs-container" class="flex flex-col gap-4">
+            <!-- Career cards will be appended here -->
+        </div>
+
+        <!-- Modal for Skill Gap Analysis -->
+        <div id="gap-modal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+            <div class="card" style="width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
+                <div class="flex justify-between items-center mb-4 pb-2 border-b">
+                    <h3 class="text-lg" id="modal-title">Skill Gap Analysis</h3>
+                    <button class="btn btn-sm" onclick="document.getElementById('gap-modal').style.display='none'" style="background:none; color:var(--text-primary);"><i class="bi bi-x-lg"></i></button>
+                </div>
+                
+                <div id="modal-content" class="text-center p-6">
+                    <span class="spinner"></span>
+                    <p class="mt-2 text-muted">Analyzing skill gaps with AI...</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRecommendations();
+
+            document.getElementById('generate-btn').addEventListener('click', async () => {
+                const btn = document.getElementById('generate-btn');
+                try {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Generating...';
+                    
+                    const res = await api.post('/career/recommend');
+                    if(res.success) {
+                        ui.showToast('Recommendations generated successfully!');
+                        renderRecommendations(res.data);
+                    }
+                } catch(err) {
+                    ui.showToast(err.message, 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-magic"></i> Generate Recommendations';
+                }
+            });
+            
+            // Initially hide modal cleanly
+            document.getElementById('gap-modal').style.display = 'none';
+            document.getElementById('gap-modal').classList.remove('hidden');
+        });
+
+        async function loadRecommendations() {
+            try {
+                ui.showLoading('Loading matches...');
+                const res = await api.get('/career/recommendations');
+                if(res.success) {
+                    if(res.data && res.data.length > 0) {
+                        renderRecommendations(res.data);
+                    } else {
+                        document.getElementById('no-recs').classList.remove('hidden');
+                    }
+                }
+                ui.hideLoading();
+            } catch(err) {
+                ui.hideLoading();
+                document.getElementById('no-recs').classList.remove('hidden');
+            }
+        }
+
+        function renderRecommendations(recs) {
+            document.getElementById('no-recs').classList.add('hidden');
+            const container = document.getElementById('recs-container');
+            container.innerHTML = '';
+
+            recs.forEach((rec, index) => {
+                const card = document.createElement('div');
+                card.className = 'career-card animate-fadeInUp';
+                card.style.animationDelay = `${index * 0.1}s`;
+                
+                let matchColor = 'var(--success)';
+                if (rec.confidenceScore < 70) matchColor = 'var(--warning)';
+                if (rec.confidenceScore < 50) matchColor = 'var(--error)';
+
+                const skillsList = rec.missingSkills.split(',').map(s => s.trim()).filter(s=>s).map(s => 
+                    `<span class="badge" style="background: var(--gray-100); color: var(--gray-700); margin: 2px;">${s}</span>`
+                ).join('');
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="flex gap-4">
+                            <div class="career-rank">#${rec.rankOrder}</div>
+                            <div>
+                                <h3 class="text-xl mb-1">${rec.careerTitle}</h3>
+                                <p class="text-sm text-muted mb-3 max-w-2xl">${rec.reason}</p>
+                                
+                                <div class="flex gap-4 mb-3 text-sm">
+                                    <div class="flex items-center gap-1 text-success"><i class="bi bi-graph-up-arrow"></i> ${rec.demandLevel} Demand</div>
+                                    <div class="flex items-center gap-1 text-primary"><i class="bi bi-cash"></i> ${rec.salaryRange}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold" style="color: ${matchColor};">${rec.confidenceScore}%</div>
+                            <div class="text-xs text-muted">Match Score</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-2 mt-4 pt-4 border-t" style="gap: 16px;">
+                        <div>
+                            <h4 class="text-sm font-semibold mb-2">Missing Skills to Learn</h4>
+                            <div class="flex flex-wrap">${skillsList || '<span class="text-muted text-sm">None identified</span>'}</div>
+                        </div>
+                        <div class="flex flex-col gap-2 justify-center items-end">
+                            <button class="btn btn-secondary btn-sm" onclick="analyzeGap('${rec.careerTitle}')">
+                                <i class="bi bi-search"></i> Skill Gap Analysis
+                            </button>
+                            <a href="learning-roadmap.html?career=${encodeURIComponent(rec.careerTitle)}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-map"></i> Create Roadmap
+                            </a>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function analyzeGap(careerTitle) {
+            const modal = document.getElementById('gap-modal');
+            const content = document.getElementById('modal-content');
+            
+            document.getElementById('modal-title').textContent = `Skill Gap: ${careerTitle}`;
+            content.innerHTML = '<span class="spinner"></span><p class="mt-2 text-muted">Analyzing skill gaps with AI...</p>';
+            modal.style.display = 'flex';
+
+            try {
+                const res = await api.post('/career/skill-gap', { targetCareer: careerTitle });
+                if(res.success && res.data) {
+                    const analysis = res.data;
+                    
+                    let html = `<div class="text-left">
+                        <div class="mb-4">
+                            <h4 class="text-success font-semibold mb-2"><i class="bi bi-check-circle"></i> Matching Skills</h4>
+                            <div class="flex flex-wrap gap-1">`;
+                    analysis.matchingSkills.forEach(s => html += `<span class="badge badge-success">${s}</span>`);
+                    html += `</div></div>
+                        <div class="mb-4">
+                            <h4 class="text-error font-semibold mb-2"><i class="bi bi-x-circle"></i> Missing Skills (To Learn)</h4>
+                            <div class="flex flex-wrap gap-1">`;
+                    analysis.missingSkills.forEach(s => html += `<span class="badge badge-error">${s}</span>`);
+                    html += `</div></div>
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-2"><i class="bi bi-lightbulb text-warning"></i> AI Recommendations</h4>
+                            <ul class="text-sm text-muted" style="padding-left: 20px;">`;
+                    analysis.recommendations.forEach(r => html += `<li>${r}</li>`);
+                    html += `</ul></div>
+                        <div class="p-3 bg-gray-50 border rounded-md">
+                            <strong>Estimated Time to Learn:</strong> ${analysis.estimatedTimeToLearn}
+                        </div>
+                    </div>`;
+                    
+                    content.innerHTML = html;
+                }
+            } catch(err) {
+                content.innerHTML = `<div class="text-error p-4"><i class="bi bi-exclamation-triangle"></i> ${err.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
